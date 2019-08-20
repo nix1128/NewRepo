@@ -1,81 +1,157 @@
 import React, { Component } from 'react';
-import './App.css';
-import Valid from './Validation/Valid';
-import Char from './Validation/Char';
 
+import classes from './App.css';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
 
-
+import authContext from '../containers/Context/context';// CONTEXT needs to wrap all the components that need to have access to it
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log('[App.js] constructor');
+  }
 
   state = {
+    persons: [
+      { id: 'asfa1', name: 'Kimon',  },
+      { id: 'vasdf1', name: 'Salt',},
+      { id: 'asdf11', name: 'Sugar',}
+    ],
+    otherState: 'some other value',
+    showPersons: false,
+showCockpit: true,
+changeCounter:0,
+authenticated : false //sets the login authentication to false as default
+  };
 
-field:''
+  // static getDerivedStateFromProps(props, state) {
+  //   console.log('[App.js] getDerivedStateFromProps', props);
+  //   return state;
+  // }
+
+  // componentWillMount() {
+  //   console.log('[App.js] componentWillMount');
+  // }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+console.log("[App.js] shouldComponentUpdate")
+if(nextProps.persons !== this.props.persons)
+{
+
+}
+return true;
+
+  }
+
+  componentDidUpdate(){
+
+console.log("[App.js] componentDidUpdate");
 
   }
 
 
-
-userInput = (event) =>{
-this.setState({field:event.target.value}); // cathces the input 
-
-
-}
-
-changeFuncHandler = (index) =>{
-const text = this.state.field.split(' '); //reach the string
-text.splice = (index, 1); //remove 1 possiton from the input array(string)
-const updatedText = text.join(' '); //update stored in new varaiable
-this.setState({field: updatedText});
-
-// function
-//call function
-//change
-//update
-// show/set the new state
-
-}
-
-
-
-render () {
-
-  // => is Bind object/function manually in order to play with state or props inside the function and to avoid scope-related issues
-
-  const charList = this.state.field.split('').map((ch,index) => {  
-
-    // const to refer the statete field to 2 new functions -> bind them with new property ch 
-    // that return pointer to the object and stores the property in it
-
-    return  <Char  character = {ch} key = {index} 
-    clicked = {() => this.changeFuncHandler( index )} //reference from char that returns the click to the index then to func changeFunc
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
     
-    />  //pass the property to to object Char
+    });
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+    // const person = Object.assign({}, this.state.persons[personIndex]);
+    person.name = event.target.value;
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+    this.setState((prevState)=> {
 
-  });
+      return {
+        persons: persons, 
+        changeCounter:prevState.changeCounter  +1
+      }
 
-  return (
+    }
+      
+     );
+  };
 
-    <div>
+  deletePersonHandler = personIndex => {
+    // const persons = this.state.persons.slice();
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
+    this.setState({ persons: persons });
+  };
 
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState({ showPersons: !doesShow });
+  };
 
-<br/><br/>
-
-
-<Valid dul = {this.state.field.length}/> 
-
-<input type = "text" onChange = {this.userInput}></input> 
-<br/> 
-{charList}
- 
-</div>
-
-
-  )
+loginHandler = () => {  // changes the autothentication back to true
+  this.setState({login:true});
+  
+  
 }
 
 
 
+  render() {
+
+    
+    console.log('[App.js] render');
+
+    let persons = null;
+
+    if (this.state.showPersons) {
+      persons = (
+        <Persons
+          persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}
+         
+        />
+      );
+    }
+
+    return (
+      
+      <div className={classes.App}>
+        <button onClick = {()=>{this.setState({showCockpit:false})}}>Remove Menu
+        </button>
+
+        <authContext.Provider value = {{authenticated : this.state.login, 
+          login:this.loginHandler }}> 
+        
+        
+      { 
+      this.state.showCockpit ? 
+
+
+      <Cockpit
+title={this.props.appTitle}
+showPersons={this.state.showPersons}
+personsLenght = {this.state.persons.length}
+clicked={this.togglePersonsHandler}
+
+
+/>:null
+
+}
+       
+        {persons}
+        <p>{React.version}</p>
+
+        </authContext.Provider>
+        
+        
+      </div>
+    );
+    // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
+  }
 }
 
 export default App;

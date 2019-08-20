@@ -19,6 +19,7 @@ return (
     
 
       <div >
+          {props.click}
   {fielD}
        
         </div>
