@@ -1,0 +1,1 @@
+<h1><?php echo e($getname); ?></h1><?php /**PATH C:\xampp\Laravel\blog\resources\views/frontview/getacess.blade.php ENDPATH**/ ?>

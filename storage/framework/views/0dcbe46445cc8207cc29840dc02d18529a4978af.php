@@ -1,0 +1,1 @@
+<h1><?php echo e($user); ?></h1><?php /**PATH C:\xampp\Laravel\blog\resources\views/frontview/my.blade.php ENDPATH**/ ?>
